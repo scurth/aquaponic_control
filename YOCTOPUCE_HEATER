@@ -30,9 +30,11 @@ relaystate = relaydata["relay1"]["advertisedValue"]
 if float(temperaturvalue) > uppertemp:
     desiredstate = "A"
     rawstate = 0
+    print "[%s] temperature too high, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
 elif float(temperaturvalue) < lowertemp:
     desiredstate = "B"
     rawstate = 1
+    print "[%s] temperature too low, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
 else:
     desiredstate = relaystate
     print "[%s] All fine, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
