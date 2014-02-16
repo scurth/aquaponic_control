@@ -1,0 +1,44 @@
+#!/usr/bin/python
+#
+# Author: Sascha Curth
+#
+import urllib2
+import json
+import datetime
+
+now = datetime.datetime.now()
+if now.hour > 6 and now.hour < 20:
+    uppertemp = 26
+    lowertemp = 25.5
+else:
+    uppertemp = 25
+    lowertemp = 22
+
+pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
+relayuri = "http://127.0.0.1:4444/bySerial/RELAYHI1-15D60"
+
+temperatureapi = ("%s/%s") % (pt100uri, "api.json")
+temperatureresponse = urllib2.urlopen(temperatureapi)
+temperaturedata = json.loads(temperatureresponse.read())
+temperaturvalue = temperaturedata["temperature"]["advertisedValue"]
+
+relayapi = ("%s/%s") % (relayuri, "api.json")
+relayresponse = urllib2.urlopen(relayapi)
+relaydata = json.loads(relayresponse.read())
+relaystate = relaydata["relay1"]["advertisedValue"]
+
+if float(temperaturvalue) > uppertemp:
+    desiredstate = "A"
+    rawstate = 0
+elif float(temperaturvalue) < lowertemp:
+    desiredstate = "B"
+    rawstate = 1
+else:
+    desiredstate = relaystate
+    print "[%s] All fine, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+
+if desiredstate != relaystate:
+    print "[%s] Temp: %s, switching to %s" % (now,temperaturvalue,desiredstate)
+    relaycall = ("%s/%s%s") % (relayuri,"api/relay1?state=",rawstate)
+    relaycallresponse = urllib2.urlopen(relaycall)
+
