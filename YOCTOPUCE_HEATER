@@ -9,10 +9,10 @@ import datetime
 now = datetime.datetime.now()
 if now.hour > 6 and now.hour < 20:
     uppertemp = 26
-    lowertemp = 25.5
+    lowertemp = 25
 else:
-    uppertemp = 25
-    lowertemp = 22
+    uppertemp = 24
+    lowertemp = 23
 
 pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
 relayuri = "http://127.0.0.1:4444/bySerial/RELAYHI1-15D60"
