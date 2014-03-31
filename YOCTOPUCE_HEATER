@@ -7,11 +7,11 @@ import json
 import datetime
 
 now = datetime.datetime.now()
-if now.hour > 6 and now.hour < 20:
-    uppertemp = 26
-    lowertemp = 25.5
+if now.hour > 8 and now.hour < 20:
+    uppertemp = 23.5
+    lowertemp = 24.5
 else:
-    uppertemp = 25
+    uppertemp = 23
     lowertemp = 22
 
 pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
