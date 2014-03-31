@@ -7,9 +7,13 @@ import json
 import datetime
 
 now = datetime.datetime.now()
+
+###################
+# CONFIG PART BEGIN
+
 if now.hour > 8 and now.hour < 20:
-    uppertemp = 23.5
-    lowertemp = 24.5
+    uppertemp = 24
+    lowertemp = 23
 else:
     uppertemp = 23
     lowertemp = 22
@@ -17,6 +21,8 @@ else:
 pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
 relayuri = "http://127.0.0.1:4444/bySerial/RELAYHI1-15D60"
 
+# CONFIG PART END
+###################
 temperatureapi = ("%s/%s") % (pt100uri, "api.json")
 temperatureresponse = urllib2.urlopen(temperatureapi)
 temperaturedata = json.loads(temperatureresponse.read())
