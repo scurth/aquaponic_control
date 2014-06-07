@@ -8,18 +8,24 @@ import datetime
 
 now = datetime.datetime.now()
 
+pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
+relayuri = "http://127.0.0.1:4444/bySerial/RELAYHI1-15D60"
+watturi = "http://10.0.1.248:4444/bySerial/YWATTMK1-13D0F"
+
+wattapi = ("%s/%s") % (watturi, "api.json")
+wattresponse = urllib2.urlopen(wattapi)
+wattdata = json.loads(wattresponse.read())
+wattvalue = wattdata["power"]["advertisedValue"]
+
 ###################
 # CONFIG PART BEGIN
 
-if now.hour > 8 and now.hour < 20:
+if now.hour > 11  and now.hour < 19:
+    uppertemp = 25
+    lowertemp = 24
+else:
     uppertemp = 24
     lowertemp = 23
-else:
-    uppertemp = 23
-    lowertemp = 22
-
-pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
-relayuri = "http://127.0.0.1:4444/bySerial/RELAYHI1-15D60"
 
 # CONFIG PART END
 ###################
@@ -33,17 +39,24 @@ relayresponse = urllib2.urlopen(relayapi)
 relaydata = json.loads(relayresponse.read())
 relaystate = relaydata["relay1"]["advertisedValue"]
 
-if float(temperaturvalue) > uppertemp:
-    desiredstate = "A"
-    rawstate = 0
-    print "[%s] temperature too high, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
-elif float(temperaturvalue) < lowertemp:
+# Solar energy usage override
+if relaystate == "A" and float(wattvalue) < -100 and float(temperaturvalue) < 26:
     desiredstate = "B"
     rawstate = 1
-    print "[%s] temperature too low, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+    print "[%s] using over energy for heater, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
 else:
-    desiredstate = relaystate
-    print "[%s] All fine, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+    if float(temperaturvalue) > uppertemp:
+        desiredstate = "A"
+        rawstate = 0
+        print "[%s] temperature too high, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+    elif float(temperaturvalue) < lowertemp:
+        desiredstate = "B"
+        rawstate = 1
+        print "[%s] temperature too low, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+    else:
+        desiredstate = relaystate
+        print "[%s] All fine, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+
 
 if desiredstate != relaystate:
     print "[%s] Temp: %s, switching to %s" % (now,temperaturvalue,desiredstate)
