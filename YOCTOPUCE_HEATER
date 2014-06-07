@@ -44,6 +44,10 @@ if relaystate == "A" and float(wattvalue) < -100 and float(temperaturvalue) < 26
     desiredstate = "B"
     rawstate = 1
     print "[%s] using over energy for heater, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
+elif relaystate == "B" and float(wattvalue) < 0  and float(temperaturvalue) < 26:
+    desiredstate = "B"
+    rawstate = 1
+    print "[%s] leaving heater on to use energy surplus for water heating, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
 else:
     if float(temperaturvalue) > uppertemp:
         desiredstate = "A"
