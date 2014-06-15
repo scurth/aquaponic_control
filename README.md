@@ -30,7 +30,7 @@ Modify the following values according to your needs:
 
 ## Notes
 ---
-   YOCTOPUCE\_HEATER uses a YOCTOPUCE PT100 sensor and YOCTORELAY to switch an aquarium heater to the desired state, depending on the current temperature and time of the day.
+   YOCTOPUCE\_HEATER uses a YOCTOPUCE PT100 sensor and YOCTORELAY to switch an aquarium heater to the desired state, depending on the current temperature and time of the day. Additionally the heater will be activated, if the solar power surplus reaches a certain value, while the temperature if the water is still under the defined maximum.
 
 ## License
 ---
