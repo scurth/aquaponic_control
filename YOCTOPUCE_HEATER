@@ -10,41 +10,45 @@ now = datetime.datetime.now()
 
 pt100uri = "http://127.0.0.1:4444/bySerial/PT100MK1-14BD3"
 relayuri = "http://127.0.0.1:4444/bySerial/RELAYHI1-15D60"
-watturi = "http://10.0.1.248:4444/bySerial/YWATTMK1-13D0F"
+#watturi = "http://10.0.1.248:4444/bySerial/YWATTMK1-13D0F"
+watturi = "http://10.0.1.248:4444/bySerial/YWATTMK1-2919C"
 
 wattapi = ("%s/%s") % (watturi, "api.json")
 wattresponse = urllib2.urlopen(wattapi)
-wattdata = json.loads(wattresponse.read())
+wattdata = json.loads(unicode(wattresponse.read(),'latin-1'))
 wattvalue = wattdata["power"]["advertisedValue"]
+#wattvalue = 50
 
 ###################
 # CONFIG PART BEGIN
 
 if now.hour > 11  and now.hour < 19:
-    uppertemp = 25
-    lowertemp = 24
+    uppertemp = 23
+    lowertemp = 21
 else:
-    uppertemp = 24
-    lowertemp = 23
+    uppertemp = 22
+    lowertemp = 20
 
+
+print "now.hour: %s Upper: %s Lower: %s" % (now.hour,uppertemp,lowertemp)
 # CONFIG PART END
 ###################
 temperatureapi = ("%s/%s") % (pt100uri, "api.json")
 temperatureresponse = urllib2.urlopen(temperatureapi)
-temperaturedata = json.loads(temperatureresponse.read())
+temperaturedata = json.loads(unicode(temperatureresponse.read(),'latin-1'))
 temperaturvalue = temperaturedata["temperature"]["advertisedValue"]
 
 relayapi = ("%s/%s") % (relayuri, "api.json")
 relayresponse = urllib2.urlopen(relayapi)
-relaydata = json.loads(relayresponse.read())
+relaydata = json.loads(unicode(relayresponse.read(),'latin-1'))
 relaystate = relaydata["relay1"]["advertisedValue"]
 
 # Solar energy usage override
-if relaystate == "A" and float(wattvalue) < -100 and float(temperaturvalue) < 26:
+if relaystate == "A" and float(wattvalue) < -100 and float(temperaturvalue) < 25:
     desiredstate = "B"
     rawstate = 1
     print "[%s] using over energy for heater, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
-elif relaystate == "B" and float(wattvalue) < 0  and float(temperaturvalue) < 26:
+elif relaystate == "B" and float(wattvalue) < 0  and float(temperaturvalue) < 25:
     desiredstate = "B"
     rawstate = 1
     print "[%s] leaving heater on to use energy surplus for water heating, relaystate:%s, temp: %s" % (now,relaystate,temperaturvalue)
